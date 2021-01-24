@@ -36,6 +36,31 @@ def linearRegression(data):
 
 
 
+def squareRegression(data):
+    #since its linear regression the A matrix will be something like:
+    #       | 1   x1    x1^2|
+    # A=    | 1   x2    x2^2|
+    #       | 1   x3    x3^2|
+    # and the b matrix would be:
+    #       |   y1  |
+    #  b=   |   y2  |
+    #       |   y3  |
+    A = np.ones((len(data), 3))
+    b = np.ones((len(data)))
+    # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
+    for i in range(0, len(data)):
+        x = data[i][0]
+        y = data[i][1]
+        A[i][1] = x
+        A[i][2] = x*x
+        b[i] = y
+    print("Linear Regression")
+    print(A)
+    print(b)
+    newX = Regression(A, b)
+
+
+
 def Regression(A, b):
     #this function solves the least square
     # for the equation Ax=b

@@ -11,55 +11,76 @@ def readData(nameFile):
     except FileNotFoundError:
         print("Can't find specified file") 
 
+def getb(data):
+    # the b matrix would be:
+    #       |   y1  |
+    #  b=   |   y2  |
+    #       |   y3  |
+    b = np.ones( ((len(data), 1)) )
+    # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
+    for i in range(0, len(data)):
+        y = data[i][1]
+        b[i] = y
+    return b
 
-def linearRegression(data):
+def getA_linearRegression(data):
     #since its linear regression the A matrix will be something like:
     #       | 1   x1|
     # A=    | 1   x2|
     #       | 1   x3|
-    # and the b matrix would be:
-    #       |   y1  |
-    #  b=   |   y2  |
-    #       |   y3  |
     A = np.ones((len(data), 2))
-    b = np.ones((len(data)))
     # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
     for i in range(0, len(data)):
         x = data[i][0]
-        y = data[i][1]
         A[i][1] = x
-        b[i] = y
-    print("Linear Regression")
-    print(A)
-    print(b)
-    newX = Regression(A, b)
+    return A
 
-
-
-def squareRegression(data):
+def getA_SquareRegression(data):
     #since its linear regression the A matrix will be something like:
     #       | 1   x1    x1^2|
     # A=    | 1   x2    x2^2|
     #       | 1   x3    x3^2|
-    # and the b matrix would be:
-    #       |   y1  |
-    #  b=   |   y2  |
-    #       |   y3  |
     A = np.ones((len(data), 3))
-    b = np.ones((len(data)))
     # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
     for i in range(0, len(data)):
         x = data[i][0]
-        y = data[i][1]
         A[i][1] = x
         A[i][2] = x*x
-        b[i] = y
+
+def linearRegression(data):
+    A = getA_linearRegression(data)
+    b = getb(data)
     print("Linear Regression")
     print(A)
     print(b)
     newX = Regression(A, b)
+    print(newX)
+    return newX
 
-def leastSquares_error(A, newX, b):
+
+def squareRegression(data):
+    A = getA_SquareRegression(data)
+    b = getb(data)
+    print("Linear Regression")
+    print(A)
+    print(b)
+    newX = Regression(A, b)
+    print(newX)
+    return newX
+
+def leastSquares_error_Linear(data , newX):
+    A = getA_linearRegression(data)
+    b = getb(data)
+    # to find the least-squares error, compute bPrime (which iis A*newX)
+    # and then calculate || b - bPrime ||
+    bPrime = np.dot(A, newX)
+    errorMatrix = np.subtract(b, bPrime)
+    return errorMatrix 
+
+
+def leastSquares_error_Square(data , newX):
+    A = getA_SquareRegression(data)
+    b = getb(data)
     # to find the least-squares error, compute bPrime (which iis A*newX)
     # and then calculate || b - bPrime ||
     bPrime = np.dot(A, newX)
@@ -80,11 +101,13 @@ def Regression(A, b):
     #now find the newx for which the equation newA * newx = newb
     #since we are sure the newA is not singular and invertible 
     newx = np.linalg.solve(newA, newb)
-    
+    return newx
 
 if __name__ == "__main__":
     # readData("GOOGL.csv")
-    # A = np.array([ [1,1,0,0], [1,1,0,0], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
+    # A = np.array([ [1,-1], [1,1], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
     # b = np.array([ -3, -1, 0, 2, 5, 1])
     # Regression(A, b)
-    linearRegression([[1,2], [2,3], [3, 4]])
+    data = [[-1,0], [1,1], [2, 2]]
+    result  = linearRegression(data)
+    leastSquares_error_Linear(data, result)

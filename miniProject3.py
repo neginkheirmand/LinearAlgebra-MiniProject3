@@ -59,6 +59,12 @@ def squareRegression(data):
     print(b)
     newX = Regression(A, b)
 
+def leastSquares_error(A, newX, b):
+    # to find the least-squares error, compute bPrime (which iis A*newX)
+    # and then calculate || b - bPrime ||
+    bPrime = np.dot(A, newX)
+    errorMatrix = np.subtract(b, bPrime)
+    return errorMatrix 
 
 
 def Regression(A, b):

@@ -75,6 +75,7 @@ def leastSquares_error_Linear(data , newX):
     # and then calculate || b - bPrime ||
     bPrime = np.dot(A, newX)
     errorMatrix = np.subtract(b, bPrime)
+    print(errorMatrix)
     return errorMatrix 
 
 
@@ -85,6 +86,7 @@ def leastSquares_error_Square(data , newX):
     # and then calculate || b - bPrime ||
     bPrime = np.dot(A, newX)
     errorMatrix = np.subtract(b, bPrime)
+    print(errorMatrix)
     return errorMatrix 
 
 

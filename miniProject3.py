@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import math  #just to deal with round off errors
+
 df = None
 
 def readData(nameFile):
@@ -46,6 +48,7 @@ def getA_SquareRegression(data):
         x = data[i][0]
         A[i][1] = x
         A[i][2] = x*x
+    return A
 
 def linearRegression(data):
     A = getA_linearRegression(data)
@@ -75,6 +78,14 @@ def leastSquares_error_Linear(data , newX):
     # and then calculate || b - bPrime ||
     bPrime = np.dot(A, newX)
     errorMatrix = np.subtract(b, bPrime)
+    #deaking with round off errors
+    for i in range(0, len(errorMatrix)):
+        ceil = math.ceil(errorMatrix[i])
+        floor = math.floor(errorMatrix[i])
+        if ceil - errorMatrix[i] < 0.0000001:
+            errorMatrix[i] = ceil
+        elif errorMatrix[i] - floor < 0.0000001:
+            errorMatrix = floor
     print(errorMatrix)
     return errorMatrix 
 
@@ -86,9 +97,16 @@ def leastSquares_error_Square(data , newX):
     # and then calculate || b - bPrime ||
     bPrime = np.dot(A, newX)
     errorMatrix = np.subtract(b, bPrime)
+    #deaking with round off errors
+    for i in range(0, len(errorMatrix)):
+        ceil = math.ceil(errorMatrix[i])
+        floor = math.floor(errorMatrix[i])
+        if ceil - errorMatrix[i] < 0.0000001:
+            errorMatrix[i] = ceil
+        elif errorMatrix[i] - floor < 0.0000001:
+            errorMatrix = floor
     print(errorMatrix)
     return errorMatrix 
-
 
 def Regression(A, b):
     #this function solves the least square
@@ -103,6 +121,14 @@ def Regression(A, b):
     #now find the newx for which the equation newA * newx = newb
     #since we are sure the newA is not singular and invertible 
     newx = np.linalg.solve(newA, newb)
+    #dealing with roundoff errors
+    for i in range(0, len(newx)):
+        ceil = math.ceil(newx[i])
+        floor = math.floor(newx[i])
+        if ceil - newx[i] < 0.0000001:
+            newx[i] = ceil
+        elif newx[i] - floor < 0.0000001:
+            newx = floor
     return newx
 
 if __name__ == "__main__":
@@ -110,6 +136,8 @@ if __name__ == "__main__":
     # A = np.array([ [1,-1], [1,1], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
     # b = np.array([ -3, -1, 0, 2, 5, 1])
     # Regression(A, b)
-    data = [[-1,0], [1,1], [2, 2]]
-    result  = linearRegression(data)
-    leastSquares_error_Linear(data, result)
+    # data = [[-1,0], [1,1], [2, 2]]
+    # result  = linearRegression(data)
+    # leastSquares_error_Linear(data, result)
+    # result = squareRegression(data)
+    # leastSquares_error_Square(data, result)

@@ -1,15 +1,21 @@
 import pandas as pd
 import numpy as np
 import math  #just to deal with round off errors
+import matplotlib.pyplot as plt
 
 openData = None
 openDataPrime = None
+allData = None
+xLinear = None
+xPoly = None
 def readData(nameFile):
     global openData
     global openDataPrime
+    global allData
     try:
         df = pd.read_csv(nameFile)
         openData = df.head(len(df)-10)['Open'].to_list()
+        allData = df['Open'].to_list()
         openDataPrime = df.tail(10)['Open'].to_list()
         return True
     except FileNotFoundError:
@@ -54,6 +60,7 @@ def getA_SquareRegression(data):
     return A
 
 def linearRegression(data):
+    #get A and b
     A = getA_linearRegression(data)
     b = getb(data)
     print('Linear Regression:')
@@ -61,21 +68,30 @@ def linearRegression(data):
     print(A)
     print("and b:")
     print(b)
+    #now solve the equation
     newX = Regression(A, b)
+    #and print the solution
     print("as result x would be:")
     print(newX)
     print('\033[0m')
+    global xLinear 
+    xLinear = newX
     return newX
 
 
 def squareRegression(data):
+    #get A and b
     A = getA_SquareRegression(data)
     b = getb(data)
     print("polynomial Regression(n=2)")
     print(A)
     print(b)
+    #now solve the equation
     newX = Regression(A, b)
+    #and print the solution
     print(newX)
+    global xPoly 
+    xPoly = newX
     return newX
 
 def leastSquares_error_Linear(date, data , newX):
@@ -89,6 +105,7 @@ def leastSquares_error_Linear(date, data , newX):
         errorMatrix = ceil
     elif errorMatrix - floor < 0.0000001:
         errorMatrix = floor
+    #printing the error
     print('\033[33mcalculated value: \033[0m', calculatedValue)
     print('\033[33mactual value: \033[0m', actualValue)
     print('\033[33merror: \033[0m', errorMatrix)
@@ -106,6 +123,7 @@ def leastSquares_error_Square(date, data , newX):
         errorMatrix = ceil
     elif errorMatrix - floor < 0.0000001:
         errorMatrix = floor
+    #printing the error 
     print('\033[33mcalculated value: \033[0m', calculatedValue)
     print('\033[33mactual value: \033[0m', actualValue)
     print('\033[33merror: \033[0m', errorMatrix)
@@ -152,16 +170,24 @@ def process():
         leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX)
         print()
 
-
+def draw():
+    global xLinear
+    global  xPoly
+    global allData
+    plt.plot([1, 2, 3, 4])
+    plt.ylabel('Google shares')
+    plt.xlabel('#day')
+    x = np.arange(0, len(allData)) 
+    plt.title("Analysis of Google shares using Regression")
+    plt.scatter( range(0, len(allData)), allData, color='red', label='provided data')
+    yLinear = xLinear[0] + xLinear[1] * x 
+    plt.plot(yLinear, color = 'blue', label='Linear Regression Analysis')
+    yPoly = xPoly[0]+xPoly[1]*x+xPoly[2]*x*x 
+    plt.plot(yPoly, color = 'cyan', label='Polynomial Regression Analysis (n=2) ')
+    plt.legend()
+    plt.show()
     
 if __name__ == "__main__":
     if readData("GOOGL.csv"):
         process()
-    # A = np.array([ [1,-1], [1,1], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
-    # b = np.array([ -3, -1, 0, 2, 5, 1])
-    # Regression(A, b)
-    # data = [[-1,0], [1,1], [2, 2]]
-    # result  = linearRegression(data)
-    # leastSquares_error_Linear(data, result)
-    # result = squareRegression(data)
-    # leastSquares_error_Square(data, result)
+        draw()

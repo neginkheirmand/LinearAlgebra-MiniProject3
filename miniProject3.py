@@ -11,8 +11,10 @@ def readData(nameFile):
         df = pd.read_csv(nameFile)
         openData = df.head(len(df)-10)['Open'].to_list()
         openDataPrime = df.tail(10)['Open'].to_list()
+        return True
     except FileNotFoundError:
         print("Can't find specified file") 
+        return False
 
 def getb(data):
     # the b matrix would be:
@@ -54,18 +56,22 @@ def getA_SquareRegression(data):
 def linearRegression(data):
     A = getA_linearRegression(data)
     b = getb(data)
-    print("Linear Regression")
+    print('Linear Regression:')
+    print("Trying to solve Ax = b, where A:")
     print(A)
+    print("and b:")
     print(b)
     newX = Regression(A, b)
+    print("as result x would be:")
     print(newX)
+    print('\033[0m')
     return newX
 
 
 def squareRegression(data):
     A = getA_SquareRegression(data)
     b = getb(data)
-    print("Linear Regression")
+    print("polynomial Regression(n=2)")
     print(A)
     print(b)
     newX = Regression(A, b)
@@ -83,7 +89,9 @@ def leastSquares_error_Linear(date, data , newX):
         errorMatrix = ceil
     elif errorMatrix - floor < 0.0000001:
         errorMatrix = floor
-    print(errorMatrix)
+    print('\033[33mcalculated value: \033[0m', calculatedValue)
+    print('\033[33mactual value: \033[0m', actualValue)
+    print('\033[33merror: \033[0m', errorMatrix)
     return errorMatrix 
 
 
@@ -98,7 +106,9 @@ def leastSquares_error_Square(date, data , newX):
         errorMatrix = ceil
     elif errorMatrix - floor < 0.0000001:
         errorMatrix = floor
-    print(errorMatrix)
+    print('\033[33mcalculated value: \033[0m', calculatedValue)
+    print('\033[33mactual value: \033[0m', actualValue)
+    print('\033[33merror: \033[0m', errorMatrix)
     return errorMatrix 
 
 def Regression(A, b):
@@ -124,8 +134,29 @@ def Regression(A, b):
             newx = floor
     return newx
 
+def process():
+    global openData
+    global openDataPrime
+    print('\033[36m Process:\033[0m')
+    linearX = linearRegression(openData)
+    print('\033[31m and the least error squares with linear regression:')
+    for i in range(0, len(openDataPrime)):
+        #the date would be len(openData)-10 + i
+        leastSquares_error_Linear(len(openData) - 10 + i, openDataPrime[i], linearX)
+        print()
+    print('\033[36m Process:\033[0m')
+    polynomialX = squareRegression(openData)
+    print('\033[31m and the least error squares with square regression:')
+    for i in range(0, len(openDataPrime)):
+        #the date would be len(openData)-10 + i
+        leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX)
+        print()
+
+
+    
 if __name__ == "__main__":
-    readData("GOOGL.csv")
+    if readData("GOOGL.csv"):
+        process()
     # A = np.array([ [1,-1], [1,1], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
     # b = np.array([ -3, -1, 0, 2, 5, 1])
     # Regression(A, b)

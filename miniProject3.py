@@ -2,14 +2,15 @@ import pandas as pd
 import numpy as np
 import math  #just to deal with round off errors
 
-df = None
-
+openData = None
+openDataPrime = None
 def readData(nameFile):
-    global df
+    global openData
+    global openDataPrime
     try:
         df = pd.read_csv(nameFile)
-        print(df.info())
-        print(df)
+        openData = df.head(len(df)-10)['Open'].to_list()
+        openDataPrime = df.tail(10)['Open'].to_list()
     except FileNotFoundError:
         print("Can't find specified file") 
 
@@ -19,9 +20,9 @@ def getb(data):
     #  b=   |   y2  |
     #       |   y3  |
     b = np.ones( ((len(data), 1)) )
-    # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
+    # data contains y values : data =[ ... [yn], [y(n+1)]   ... ]
     for i in range(0, len(data)):
-        y = data[i][1]
+        y = data[i]
         b[i] = y
     return b
 
@@ -31,9 +32,9 @@ def getA_linearRegression(data):
     # A=    | 1   x2|
     #       | 1   x3|
     A = np.ones((len(data), 2))
-    # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
+    # data contains y values (indexes are x's): data =[ ... [yn], [y(n+1)]   ... ]
     for i in range(0, len(data)):
-        x = data[i][0]
+        x = i
         A[i][1] = x
     return A
 
@@ -43,9 +44,9 @@ def getA_SquareRegression(data):
     # A=    | 1   x2    x2^2|
     #       | 1   x3    x3^2|
     A = np.ones((len(data), 3))
-    # data contains pairs of x and y : data =[ ... [xn, yn], [x(n+1), y(n+1)]   ... ]
+    # data contains y values (indexes are x's): data =[ ... [yn], [y(n+1)]   ... ]
     for i in range(0, len(data)):
-        x = data[i][0]
+        x = i
         A[i][1] = x
         A[i][2] = x*x
     return A
@@ -71,40 +72,32 @@ def squareRegression(data):
     print(newX)
     return newX
 
-def leastSquares_error_Linear(data , newX):
-    A = getA_linearRegression(data)
-    b = getb(data)
-    # to find the least-squares error, compute bPrime (which iis A*newX)
-    # and then calculate || b - bPrime ||
-    bPrime = np.dot(A, newX)
-    errorMatrix = np.subtract(b, bPrime)
-    #deaking with round off errors
-    for i in range(0, len(errorMatrix)):
-        ceil = math.ceil(errorMatrix[i])
-        floor = math.floor(errorMatrix[i])
-        if ceil - errorMatrix[i] < 0.0000001:
-            errorMatrix[i] = ceil
-        elif errorMatrix[i] - floor < 0.0000001:
-            errorMatrix = floor
+def leastSquares_error_Linear(date, data , newX):
+    calculatedValue = newX[0]+newX[1]*date
+    actualValue = data
+    errorMatrix = calculatedValue - actualValue
+    #dealing with round off errors
+    ceil = math.ceil(errorMatrix)
+    floor = math.floor(errorMatrix)
+    if ceil - errorMatrix < 0.0000001:
+        errorMatrix = ceil
+    elif errorMatrix - floor < 0.0000001:
+        errorMatrix = floor
     print(errorMatrix)
     return errorMatrix 
 
 
-def leastSquares_error_Square(data , newX):
-    A = getA_SquareRegression(data)
-    b = getb(data)
-    # to find the least-squares error, compute bPrime (which iis A*newX)
-    # and then calculate || b - bPrime ||
-    bPrime = np.dot(A, newX)
-    errorMatrix = np.subtract(b, bPrime)
-    #deaking with round off errors
-    for i in range(0, len(errorMatrix)):
-        ceil = math.ceil(errorMatrix[i])
-        floor = math.floor(errorMatrix[i])
-        if ceil - errorMatrix[i] < 0.0000001:
-            errorMatrix[i] = ceil
-        elif errorMatrix[i] - floor < 0.0000001:
-            errorMatrix = floor
+def leastSquares_error_Square(date, data , newX):
+    calculatedValue = newX[0] + newX[1]*date + (newX[2]*date*date)
+    actualValue = data
+    errorMatrix = calculatedValue - actualValue
+    #dealing with round off errors
+    ceil = math.ceil(errorMatrix)
+    floor = math.floor(errorMatrix)
+    if ceil - errorMatrix < 0.0000001:
+        errorMatrix = ceil
+    elif errorMatrix - floor < 0.0000001:
+        errorMatrix = floor
     print(errorMatrix)
     return errorMatrix 
 
@@ -132,7 +125,7 @@ def Regression(A, b):
     return newx
 
 if __name__ == "__main__":
-    # readData("GOOGL.csv")
+    readData("GOOGL.csv")
     # A = np.array([ [1,-1], [1,1], [1,0,1,0], [1,0,1,0], [1,0,0,1], [1,0,0,1]])
     # b = np.array([ -3, -1, 0, 2, 5, 1])
     # Regression(A, b)

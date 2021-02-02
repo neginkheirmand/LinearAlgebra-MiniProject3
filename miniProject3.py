@@ -169,7 +169,7 @@ def process():
     print('\033[36m Process:\033[0m')
     polynomialX = squareRegression(openData)
     global sumAbsoluteErrorPoly
-    #Polinomial regression
+    #Polynomial regression
     print('\033[31m and the least error squares with square regression:')
     for i in range(0, len(openDataPrime)):
         #the date would be len(openData)-10 + i
@@ -198,7 +198,7 @@ def comparator():
     global sumAbsoluteErrorPoly
     global sumAbsoluteErrorLinear
     if sumAbsoluteErrorLinear>sumAbsoluteErrorPoly:
-        print("Polinomial regression(n=2) is more accurate")
+        print("Polynomial regression(n=2) is more accurate")
     else:
         print("Linear regression(n=2) is more accurate")
 

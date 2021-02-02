@@ -164,7 +164,7 @@ def process():
     print('\033[31m and the least error squares with linear regression:')
     for i in range(0, len(openDataPrime)):
         #the date would be len(openData)-10 + i
-        sumAbsoluteErrorLinear += math.abs(leastSquares_error_Linear(len(openData) - 10 + i, openDataPrime[i], linearX))
+        sumAbsoluteErrorLinear += abs(leastSquares_error_Linear(len(openData) - 10 + i, openDataPrime[i], linearX))
         print()
     print('\033[36m Process:\033[0m')
     polynomialX = squareRegression(openData)
@@ -173,7 +173,7 @@ def process():
     print('\033[31m and the least error squares with square regression:')
     for i in range(0, len(openDataPrime)):
         #the date would be len(openData)-10 + i
-        sumAbsoluteErrorPoly +=math.abs(leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX))
+        sumAbsoluteErrorPoly +=abs(leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX))
         print()
 
 def draw():

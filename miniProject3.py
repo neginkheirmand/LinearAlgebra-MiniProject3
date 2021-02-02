@@ -8,6 +8,8 @@ openDataPrime = None
 allData = None
 xLinear = None
 xPoly = None
+sumAbsoluteErrorLinear = 0
+sumAbsoluteErrorPoly = 0
 def readData(nameFile):
     global openData
     global openDataPrime
@@ -157,17 +159,21 @@ def process():
     global openDataPrime
     print('\033[36m Process:\033[0m')
     linearX = linearRegression(openData)
+    global sumAbsoluteErrorLinear
+    #Linear regression
     print('\033[31m and the least error squares with linear regression:')
     for i in range(0, len(openDataPrime)):
         #the date would be len(openData)-10 + i
-        leastSquares_error_Linear(len(openData) - 10 + i, openDataPrime[i], linearX)
+        sumAbsoluteErrorLinear += math.abs(leastSquares_error_Linear(len(openData) - 10 + i, openDataPrime[i], linearX))
         print()
     print('\033[36m Process:\033[0m')
     polynomialX = squareRegression(openData)
+    global sumAbsoluteErrorPoly
+    #Polinomial regression
     print('\033[31m and the least error squares with square regression:')
     for i in range(0, len(openDataPrime)):
         #the date would be len(openData)-10 + i
-        leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX)
+        sumAbsoluteErrorPoly +=math.abs(leastSquares_error_Square(len(openData) - 10 + i, openDataPrime[i], polynomialX))
         print()
 
 def draw():
@@ -187,7 +193,17 @@ def draw():
     plt.legend()
     plt.show()
     
+def comparator():
+    print("Taking in account only tyhe last 10 values of the doc we can say:")
+    global sumAbsoluteErrorPoly
+    global sumAbsoluteErrorLinear
+    if sumAbsoluteErrorLinear>sumAbsoluteErrorPoly:
+        print("Polinomial regression(n=2) is more accurate")
+    else:
+        print("Linear regression(n=2) is more accurate")
+
 if __name__ == "__main__":
     if readData("GOOGL.csv"):
         process()
+        comparator()
         draw()
